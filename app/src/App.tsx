@@ -7,9 +7,9 @@ import Navbar from './components/Navbar'
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="flex flex-col h-screen overflow-hidden">
+      <div className="flex flex-col min-h-screen md:h-screen md:overflow-hidden">
         <Navbar />
-        <main className="flex-grow h-0 overflow-hidden">
+        <main className="flex-grow">
 
           <Routes>
             <Route path="/" element={<Home />} />
