@@ -1,30 +1,89 @@
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { Mail, UsersRound } from 'lucide-react'
+
+interface GitUser {
+  avatar_url: string
+  name: string
+  bio: string
+  public_repos: number
+  html_url: string
+}
+
 export default function Contact() {
+  const [gitData, setGitData] = useState<GitUser | null>(null);
+
+  useEffect(() => {
+    axios.get<GitUser>("https://api.github.com/users/Fsp30")
+      .then((response) => {
+        setGitData(response.data);
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar dados do GitHub:", error);
+      });
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-900">
-    
-      <h1 className="text-4xl font-bold text-white mb-4">Entre em Contato</h1>
-      <p className="text-gray-400 mb-8 text-center max-w-xl">
-        Me mande uma mensagem ou confira meus projetos e redes sociais abaixo!
-      </p>
-      <form className="w-full max-w-md space-y-4 mb-10">
-        <input type="text" placeholder="Nome" className="w-full p-3 rounded-lg bg-gray-700 text-white" />
-        <input type="email" placeholder="Email" className="w-full p-3 rounded-lg bg-gray-700 text-white" />
-        <textarea placeholder="Mensagem" className="w-full p-3 rounded-lg bg-gray-700 text-white h-32" />
-        <button type="submit" className="w-full p-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition">
-          Enviar Mensagem
-        </button>
-      </form>
-      <div className="flex flex-col items-center space-y-4">
-        <img src="URL_DA_IMAGEM" alt="Avatar GitHub" className="w-24 h-24 rounded-full" />
-        <h2 className="text-2xl text-white font-semibold">Seu Nome</h2>
-        <p className="text-amber-400 text-center max-w-sm">Bio do GitHub puxada pela API</p>
-        <div className="flex space-x-4 mt-4 text-gray-200">
-          <a href="https://github.com/SEU_USUARIO" >GitHub</a>
-          <a href="https://linkedin.com/in/SEU_LINKEDIN" >LinkedIn</a>
-          <a href="mailto:SEU_EMAIL">Email</a>
-        </div>
+    <div className="h-screen overflow-y-auto p-6 bg-gray-900 text-white flex flex-col items-center">
+      <div className="max-w-4xl w-full flex flex-col items-center">
+
+        <h1 className="text-4xl font-bold mb-4">Entre em Contato</h1>
+        <p className="text-gray-400 mb-8 text-center max-w-xl">
+          Me mande uma mensagem ou confira meus projetos e redes sociais abaixo!
+        </p>
+
+        <form className="w-full max-w-md space-y-4 mb-10">
+          <div className="w-full p-3 gap-2 rounded-lg bg-gray-700 text-white flex ">
+            <UsersRound />
+            <input
+              type="text"
+              placeholder="Nome"
+              className='w-full border-0 focus:ring-0 focus:outline-none bg-gray-700 text-zinc-400 rounded-lg'
+            />
+          </div>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-3 rounded-lg bg-gray-700 text-white"
+          />
+          <textarea
+            placeholder="Mensagem"
+            className="w-full p-3 rounded-lg bg-gray-700 text-white h-32"
+          />
+          <button
+            type="submit"
+            className="w-full p-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition"
+          >
+            Enviar Mensagem
+          </button>
+        </form>
+
+        {gitData ? (
+          <div className="bg-gray-800 p-6 rounded-xl shadow-lg flex flex-col items-center mb-10">
+            <img
+              src={gitData.avatar_url}
+              alt="Avatar"
+              className="w-24 h-24 rounded-full mb-4"
+            />
+            <h2 className="text-2xl font-bold mb-2">{gitData.name}</h2>
+            <p className="text-gray-300 mb-4 text-center">{gitData.bio}</p>
+            <p className="text-sm text-gray-400 mb-4">
+              Repositórios públicos: {gitData.public_repos}
+            </p>
+            <a
+              href={gitData.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:underline"
+            >
+              Ver GitHub
+            </a>
+          </div>
+        ) : (
+          <p>Carregando informações...</p>
+        )}
+
       </div>
     </div>
-
   )
 }

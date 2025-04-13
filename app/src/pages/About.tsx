@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+
 export default function About() {
   return (
     <div className="p-6 min-h-screen md:h-screen flex flex-col md:flex-row gap-6 bg-gray-700 justify-center items-center overflow-hidden">
