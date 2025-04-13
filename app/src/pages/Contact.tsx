@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { Mail, UsersRound } from 'lucide-react'
+import { Mail, UsersRound, AtSign, MailCheck } from 'lucide-react'
+import { motion, AnimatePresence } from "framer-motion";
 
 interface GitUser {
   avatar_url: string
@@ -16,12 +17,19 @@ export default function Contact() {
   useEffect(() => {
     axios.get<GitUser>("https://api.github.com/users/Fsp30")
       .then((response) => {
-        setGitData(response.data);
+        setGitData(response.data)
       })
       .catch((error) => {
-        console.error("Erro ao buscar dados do GitHub:", error);
-      });
-  }, []);
+        console.error("Erro ao buscar dados do GitHub:", error)
+      })
+  }, [])
+
+  const [sent, setSent] = useState(false)
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault()
+    setSent(true)
+    setTimeout(() => setSent(false), 3000)
+  }
 
   return (
     <div className="h-screen overflow-y-auto p-6 bg-gray-900 text-white flex flex-col items-center">
@@ -32,7 +40,7 @@ export default function Contact() {
           Me mande uma mensagem ou confira meus projetos e redes sociais abaixo!
         </p>
 
-        <form className="w-full max-w-md space-y-4 mb-10">
+        <form onSubmit={handleSend} className="w-full max-w-md space-y-4 mb-10">
           <div className="w-full p-3 gap-2 rounded-lg bg-gray-700 text-white flex ">
             <UsersRound />
             <input
@@ -40,22 +48,54 @@ export default function Contact() {
               placeholder="Nome"
               className='w-full border-0 focus:ring-0 focus:outline-none bg-gray-700 text-zinc-400 rounded-lg'
             />
+          </div  >
+          <div className="w-full p-3 gap-2 rounded-lg bg-gray-700 text-white flex ">
+            <AtSign />
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full border-0 focus:ring-0 focus:outline-none bg-gray-700 text-zinc-400 rounded-lg"
+            />
           </div>
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full p-3 rounded-lg bg-gray-700 text-white"
-          />
-          <textarea
-            placeholder="Mensagem"
-            className="w-full p-3 rounded-lg bg-gray-700 text-white h-32"
-          />
+          <div className="w-full p-3 gap-2 rounded-lg bg-gray-700 text-white flex ">
+            <Mail />
+            <textarea
+              placeholder="Mensagem"
+              className="w-full border-0 focus:ring-0 focus:outline-none bg-gray-700 text-zinc-400 rounded-lg"
+            />
+
+          </div>
           <button
             type="submit"
-            className="w-full p-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition"
+            className="w-full h-8 p-3 bg-zinc-500 hover:bg-gray-800 text-white rounded-lg transition relative overflow-hidden flex justify-center items-center"
           >
-            Enviar Mensagem
+            <AnimatePresence mode="wait">
+              {!sent ? (
+                <motion.span
+                  key="text"
+                  initial={{ y: 0, opacity: 1 }}
+                  animate={{ y: sent ? 20 : 0, opacity: sent ? 0 : 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute"
+                >
+                  Enviar Mensagem
+                </motion.span>
+              ) : (
+                <motion.div
+                  key="icon"
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="absolute"
+                >
+                  <MailCheck size={24} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </button>
+
         </form>
 
         {gitData ? (
